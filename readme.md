@@ -1,0 +1,1 @@
+Advanced Input Field which uses Draft Js, Math Quill and React Katex to build React component

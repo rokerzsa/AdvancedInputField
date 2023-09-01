@@ -1,4 +1,1 @@
-import AdvancedInputField from './components/organisms/advanced-input-field/AdvancedInputField'
-
-
-export default AdvancedInputField
+export { default as AdvancedInputField } from './components/organisms/advanced-input-field/AdvancedInputField'

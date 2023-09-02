@@ -1,40 +1,43 @@
-import { Editor, EditorState, RichUtils } from 'draft-js'
-import { Map } from 'immutable'
-import React, { createRef, useRef, useState } from 'react'
-import { content } from './helper/content'
-import { insertTeXBlock, removeTeXBlock } from './helper'
+import { CompositeDecorator, Editor, EditorState, Entity, RichUtils, convertToRaw } from 'draft-js'
+import React, { useRef, useState } from 'react'
+import { insertTeXBlock } from './helper'
 import TexBlock from '../../atoms/tex-block/TexBlock'
+import { content } from './helper/content'
+
+
+const findCustomEntity = (contentBlock, callback) => {
+  contentBlock.findEntityRanges(
+    (character) => {
+      const entityKey = character.getEntity();
+      return (
+        entityKey !== null &&
+        Entity.get(entityKey).getType() === "TEXBLOCK"
+      );
+    },
+    callback
+  );
+};
+
+// Create a decorator that applies the strategy
+const decorator = new CompositeDecorator([
+  {
+    strategy: findCustomEntity,
+    component: TexBlock, // Your custom entity component
+  },
+]);
+
 
 const CustomInputField = () => {
 
-  const editorRef = createRef
+  const editorRef = useRef()
 
-  const [editorState, setEditorState] = useState(EditorState.createWithContent(content))
-  
-  const [liveTeXEdits, setLiveTeXEdits] = useState(Map())
-
-  const blockRenderer = (block) => {
-    if (block.getType() === 'atomic') {
-      return {
-        component: TexBlock,
-        editable: false,
-        props: {
-          onStartEdit: (blockKey) => {
-            setLiveTeXEdits(liveTeXEdits.set(blockKey, true));
-          },
-          onFinishEdit: (blockKey, newContentState) => {
-            setLiveTeXEdits(liveTeXEdits.remove(blockKey));
-            setEditorState(EditorState.createWithContent(newContentState))
-          },
-          onRemove: (blockKey) => removeTeX(blockKey),
-        },
-      };
-    }
-    return null;
-  };
+  const [editorState, setEditorState] = useState(EditorState.createWithContent(content, decorator))
 
   const handleEditorFocus = () => { editorRef.current.focus() }
-  const handleEditorChange = (newEditorState) => { setEditorState(newEditorState) }
+
+  const handleEditorChange = (newEditorState) => { 
+    setEditorState(newEditorState)   
+  }
 
   const handleKeyCommand = (command, editorState) => {
     var newState = RichUtils.handleKeyCommand(editorState, command);
@@ -45,30 +48,24 @@ const CustomInputField = () => {
     return false;
   };
 
-
-  const removeTeX = (blockKey) => {
-    setLiveTeXEdits(liveTeXEdits.remove(blockKey));
-    setEditorState(removeTeXBlock(editorState, blockKey))
-  };
-
   const insertTeX = () => {
-    setLiveTeXEdits(Map());
-    setEditorState(insertTeXBlock(editorState))
+    const newEditorState = insertTeXBlock(editorState)
+    // console.log(convertToRaw(newEditorState.getCurrentContent()))
+    setEditorState(newEditorState)
   };
+
 
   return (
     <div onClick={handleEditorFocus}>
       <Editor
-        blockRendererFn={blockRenderer}
         editorState={editorState}
         handleKeyCommand={handleKeyCommand}
         onChange={handleEditorChange}
-        placeholder="Start a document..."
-        readOnly={liveTeXEdits.count()}
+        placeholder="Type a question"
         ref={editorRef}
         spellCheck={true}
       />
-      <button onClick={insertTeX} className="TeXEditor-insert">
+      <button onClick={() => insertTeX()} className="TeXEditor-insert">
         {'Insert new TeX'}
       </button>
     </div>

@@ -1,62 +1,144 @@
 import {
     AtomicBlockUtils,
+    BlockMapBuilder,
+    ContentBlock,
+    ContentState,
     EditorState,
+    Entity,
     Modifier,
-    SelectionState
+    convertFromRaw,
+    convertToRaw,
+    genKey,
 } from 'draft-js';
 
-let count = 0;
 
-const examples = [
-    '\\int_a^bu\\frac{d^2v}{dx^2}\\,dx\n' +
-    '=\\left.u\\frac{dv}{dx}\\right|_a^b\n' +
-    '-\\int_a^b\\frac{du}{dx}\\frac{dv}{dx}\\,dx',
+export const insertTeXBlock = (editorState) => {
 
-    'P(E) = {n \\choose k} p^k (1-p)^{ n-k} ',
-
-    '\\tilde f(\\omega)=\\frac{1}{2\\pi}\n' +
-    '\\int_{-\\infty}^\\infty f(x)e^{-i\\omega x}\\,dx',
-
-    '\\frac{1}{(\\sqrt{\\phi \\sqrt{5}}-\\phi) e^{\\frac25 \\pi}} =\n' +
-    '1+\\frac{e^{-2\\pi}} {1+\\frac{e^{-4\\pi}} {1+\\frac{e^{-6\\pi}}\n' +
-    '{1+\\frac{e^{-8\\pi}} {1+\\ldots} } } }',
-];
-
-export function insertTeXBlock(editorState) {
     const contentState = editorState.getCurrentContent();
-    const nextFormula = count++ % examples.length;
+    const selectionState = contentState.getSelectionAfter();
+
     const contentStateWithEntity = contentState.createEntity(
-        'TOKEN',
+        'TEXBLOCK',
         'IMMUTABLE',
-        { content: examples[nextFormula] },
+        {},
     );
+
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-    const newEditorState = EditorState.set(
-        editorState,
-        { currentContent: contentStateWithEntity },
+
+    const finalContentState = Modifier.applyEntity(
+        contentStateWithEntity,
+        selectionState,
+        entityKey,
     );
-    return AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, ' ');
-}
 
-
-export function removeTeXBlock(editorState, blockKey) {
-    var content = editorState.getCurrentContent();
-    var block = content.getBlockForKey(blockKey);
-
-    var targetRange = new SelectionState({
-        anchorKey: blockKey,
-        anchorOffset: 0,
-        focusKey: blockKey,
-        focusOffset: block.getLength(),
+    const newEditorState = EditorState.set(editorState, {
+        currentContent: finalContentState,
     });
 
-    var withoutTeX = Modifier.removeRange(content, targetRange, 'backward');
-    var resetBlock = Modifier.setBlockType(
-        withoutTeX,
-        withoutTeX.getSelectionAfter(),
-        'unstyled',
-    );
+    return newEditorState;
 
-    var newState = EditorState.push(editorState, resetBlock, 'remove-range');
-    return EditorState.forceSelection(newState, resetBlock.getSelectionAfter());
+    console.log(convertToRaw(newEditorState.getCurrentContent()))
+
+
+
+
+    // const currentEntity = contentStateWithEntity.getEntity(entityKey)
+
+    // const newEntityMap = contentState
+    //     .getEntityMap()
+
+    // newEntityMap.add(currentEntity)
+    // // .set(entityKey, currentEntity)
+    // // .toSeq()
+    // // .toOrderedMap()
+    // // .toArray()
+
+    // console.log(newEntityMap)
+
+    // console.log(contentState
+    //     .getEntityMap())
+
+    // const newBlockArray = contentState
+    //     .getBlocksAsArray()
+
+    // const newContentState = ContentState.createFromBlockArray(newBlockArray, newEntityMap)
+
+    // console.log(contentState.getBlockMap())
+
+    // console.log(convertToRaw(newContentState))
+
+    // console.log(currentEntityArray)
+
+    // const entityAppliedContentState = Modifier.applyEntity(contentStateWithEntity, contentStateWithEntity.getSelectionAfter(), entityKey)
+
+
+    // const newEditorState = EditorState.push(editorState, entityAppliedContentState, 'apply-entity')
+
+
+
+    // const currentEntity = contentStateWithEntity.get(entityKey)
+
+    // const newEditorState = EditorState.set(
+    //     editorState,
+    //     { currentContent: contentStateWithEntity },
+    // );
+
+    // const newBlockArray = contentState
+    //     .getBlocksAsArray();
+
+
+    // contentState.addEntity(entityKey)
+
+    // const newContentState = ContentState.createFromBlockArray(newBlockArray, contentStateWithEntity.getEntityMap())
+
+    // const finalEditorStateAfterBlock = AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, ' ')
+
+    // const finalRawState = convertToRaw(finalEditorStateAfterBlock.getCurrentContent())
+
+    // console.log(convertToRaw(newEditorState.getCurrentContent()))
+
+    // return EditorState.createWithContent(newContentState)
+    // const newBlock = new ContentBlock({
+    //     key: genKey(),
+    //     type: 'texblock',
+    //     text: ' ', // Text for the block
+    // });
+
+    // const newBlockArray = contentState
+    //     .getBlockMap()
+    //     .set(newBlock.getKey(), newBlock)
+    //     .toSeq()
+    //     .toOrderedMap()
+    //     .toArray()
+    //     ;
+
+    // const newContentState = ContentState.createFromBlockArray(newBlockArray)
+
+    // console.log(convertToRaw(newContentState))
+
+    // return EditorState.createWithContent(newContentState)
+
 }
+
+
+// export const removeTeXBlock = (editorState, blockKey) => {
+//     var content = editorState.getCurrentContent();
+//     var block = content.getBlockForKey(blockKey);
+
+//     var targetRange = new SelectionState({
+//         anchorKey: blockKey,
+//         anchorOffset: 0,
+//         focusKey: blockKey,
+//         focusOffset: block.getLength(),
+//     });
+
+//     var withoutTeX = Modifier.removeRange(content, targetRange, 'backward');
+//     var resetBlock = Modifier.setBlockType(
+//         withoutTeX,
+//         withoutTeX.getSelectionAfter(),
+//         'unstyled',
+//     );
+
+//     var newState = EditorState.push(editorState, resetBlock, 'remove-range');
+//     return EditorState.forceSelection(newState, resetBlock.getSelectionAfter());
+// }

@@ -28,7 +28,6 @@ var rawContent = {
     {
       text: ' ',
       type: 'atomic',
-      entityRanges: [{offset: 0, length: 1, key: 'first'}],
     },
     {
       text: 'You can also insert a new TeX block at the cursor location.',
@@ -37,17 +36,6 @@ var rawContent = {
   ],
 
   entityMap: {
-    first: {
-      type: 'TOKEN',
-      mutability: 'IMMUTABLE',
-      data: {
-        content: (
-          '\\left( \\sum_{k=1}^n a_k b_k \\right)^{\\!\\!2} \\leq\n' +
-          '\\left( \\sum_{k=1}^n a_k^2 \\right)\n' +
-          '\\left( \\sum_{k=1}^n b_k^2 \\right)'
-        ),
-      },
-    },
   },
 };
 

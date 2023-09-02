@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { InlineMath } from 'react-katex'
 
-const TexBlock = () => {
+const TexBlock = (props) => {
+  const { block } = props;
   return (
-    <div>
-        <InlineMath>\\frac{1}{2}</InlineMath>
-    </div>
+    <span>
+      "Hi"
+    </span>
   )
 }
 

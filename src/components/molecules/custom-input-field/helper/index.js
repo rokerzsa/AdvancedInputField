@@ -15,29 +15,62 @@ import {
 export const insertTeXBlock = (editorState) => {
 
     const contentState = editorState.getCurrentContent();
-    const selectionState = contentState.getSelectionAfter();
 
     const contentStateWithEntity = contentState.createEntity(
         'TEXBLOCK',
         'IMMUTABLE',
-        {},
+        {}
     );
 
     const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const currentSelectionState = editorState.getSelection();
 
-    const finalContentState = Modifier.applyEntity(
-        contentStateWithEntity,
-        selectionState,
-        entityKey,
+    const contentStateEntityApplied = Modifier.replaceText(
+        contentState,
+        currentSelectionState,
+        ' ',
+        undefined,
+        entityKey
+    )
+
+    const newEditorState = EditorState.push(
+        editorState,
+        contentStateEntityApplied,
+        'insert-fragment'
+    )
+
+    return EditorState.forceSelection(
+        newEditorState,
+        contentStateEntityApplied.getSelectionAfter()
     );
 
-    const newEditorState = EditorState.set(editorState, {
-        currentContent: finalContentState,
-    });
+    // return AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, ' ');
 
-    return newEditorState;
+    // const selectionState = contentState.getSelectionAfter();
 
-    console.log(convertToRaw(newEditorState.getCurrentContent()))
+    // const contentStateWithEntity = contentState.createEntity(
+    //     'TEXBLOCK',
+    //     'IMMUTABLE',
+    //     {},
+    // );
+
+    // const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+
+    // const finalContentState = Modifier.applyEntity(
+    //     contentStateWithEntity,
+    //     selectionState,
+    //     entityKey,
+    // );
+
+    // const newEditorState = EditorState.set(editorState, {
+    //     currentContent: finalContentState,
+    // });
+
+    // console.log(convertToRaw(newEditorState.getCurrentContent()))
+
+
+    // return newEditorState;
+
 
 
 

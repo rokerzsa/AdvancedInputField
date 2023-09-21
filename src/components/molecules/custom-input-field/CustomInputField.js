@@ -5,13 +5,13 @@ import TexBlock from '../../atoms/tex-block/TexBlock'
 import { content } from './helper/content'
 
 
-const findCustomEntity = (contentBlock, callback) => {
+const findCustomEntity = (contentBlock, callback, contentState) => {
   contentBlock.findEntityRanges(
     (character) => {
       const entityKey = character.getEntity();
       return (
         entityKey !== null &&
-        Entity.get(entityKey).getType() === "TEXBLOCK"
+        contentState.getEntity(entityKey).getType() === "TEXBLOCK"
       );
     },
     callback
@@ -26,7 +26,6 @@ const decorator = new CompositeDecorator([
   },
 ]);
 
-
 const CustomInputField = () => {
 
   const editorRef = useRef()
@@ -35,8 +34,8 @@ const CustomInputField = () => {
 
   const handleEditorFocus = () => { editorRef.current.focus() }
 
-  const handleEditorChange = (newEditorState) => { 
-    setEditorState(newEditorState)   
+  const handleEditorChange = (newEditorState) => {
+    setEditorState(newEditorState)
   }
 
   const handleKeyCommand = (command, editorState) => {
@@ -50,7 +49,7 @@ const CustomInputField = () => {
 
   const insertTeX = () => {
     const newEditorState = insertTeXBlock(editorState)
-    // console.log(convertToRaw(newEditorState.getCurrentContent()))
+    console.log(convertToRaw(newEditorState.getCurrentContent()))
     setEditorState(newEditorState)
   };
 

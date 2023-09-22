@@ -2,18 +2,25 @@
   "name": "advanced-input-field",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["src/components/AdvancedInputField/*"],
+  "workspaces": [
+    "src/components/AdvancedInputField/*"
+  ],
   "dependencies": {
+    "@emotion/css": "^11.11.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "draft-js": "^0.11.0",
+    "escape-html": "^1.0.3",
+    "is-hotkey": "^0.2.0",
     "katex": "^0.16.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-katex": "^3.0.1",
-    "react-quill": "^2.0.0",
     "react-scripts": "5.0.1",
+    "slate": "^0.94.1",
+    "slate-history": "^0.93.0",
+    "slate-hyperscript": "^0.77.0",
+    "slate-react": "^0.98.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -40,5 +47,7 @@
       "last 1 safari version"
     ]
   },
-  "packages":["src/components/AdvancedInputField"]
+  "packages": [
+    "src/components/AdvancedInputField"
+  ]
 }

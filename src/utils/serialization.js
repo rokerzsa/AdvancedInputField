@@ -9,6 +9,21 @@ export const serialize = node => {
         if (node.bold) {
             string = `<strong>${string}</strong>`
         }
+        if (node.italic) {
+            string = `<em>${string}</em>`
+        }
+        if (node.underline) {
+            string = `<u>${string}</u>`
+        }
+        if (node.code) {
+            string = `<code>${string}</code>`
+        }
+        if (node.superscript) {
+            string = `<sup>${string}</sup>`
+        }
+        if (node.subscript) {
+            string = `<sub>${string}</sub>`
+        }
         return string
     }
 
@@ -41,6 +56,22 @@ export const deserialize = (el, markAttributes = {}) => {
     switch (el.nodeName) {
         case 'STRONG':
             nodeAttributes.bold = true
+            break
+        case 'EM':
+            nodeAttributes.italic = true
+            break
+        case 'U':
+            nodeAttributes.underline = true
+            break
+        case 'CODE':
+            nodeAttributes.code = true
+            break
+        case 'SUP':
+            nodeAttributes.subscript = true
+            break
+        case 'SUB':
+            nodeAttributes.subscript = true
+            break
     }
 
     const children = Array.from(el.childNodes)
@@ -59,7 +90,7 @@ export const deserialize = (el, markAttributes = {}) => {
         case 'BR':
             return '\n'
         case 'LATEX':
-            return jsx('element', { type: 'tex', state: { latex:children[0].text } }, emptyChildrenNode)
+            return jsx('element', { type: 'tex', state: { latex: children[0].text } }, emptyChildrenNode)
         case 'SLATELINE':
             return jsx('element', { type: 'paragraph' }, children)
         case 'P':
